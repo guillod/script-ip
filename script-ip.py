@@ -2,7 +2,10 @@
 
 ###################################################################################################
 ## Script python3 pour rentrer les notes sur IP (https://etu.math.upmc.fr/math/) automatiquement ##
-## à partir d'un fichier CSV, par Julien Guillod (4 juin 2018)                                   ##
+## à partir d'un fichier CSV, par Julien Guillod                                                 ##
+## v1 11 janvier 2018                                                                            ##
+## v2 4 juin 2018                                                                                ##
+## v3 19 novembre 2018                                                                           ##
 ###################################################################################################
 
 ### Dépendances : ###
@@ -33,7 +36,7 @@
 #   6. C'est terminé, taper quit() sur la ligne de commande pour quitter ou recommencer au point 3. pour remplir les notes d'un autre examen.
 
 ### Spécifications ###
-# Le script remplit les notes de tout les étudiants affichés sur la page IP qui sont également présents dans le fichier CSV (i.e. l'intersection des deux). Les notes présentes dans le fichier csv et sur la page IP sont écrasées, les autres notes sont conservées.
+# Le script remplit les notes de tout les étudiants affichés sur la page IP qui sont également présents dans le fichier CSV (i.e. l'intersection des deux). Les notes présentes dans le fichier csv et sur la page IP sont écrasées, les autres notes sont conservées. Les étudiants présents dans le fichier csv mais pas sur IP sont signalés.
 
 import csv, code
 from selenium import webdriver
@@ -50,9 +53,13 @@ def load(filename, idd, mark):
 def fill(notes):
     #iterate over the number of notes in html
     nb_notes = int(browser.find_element_by_id("nb_notes").get_attribute("value"))
+    # list of student number on IP
+    list_no_etu = set()
     for i in range(nb_notes):
         # student's number corresponding to ith note
         no_etu = browser.find_element_by_id('dossier'+str(i)).get_attribute("value")
+        # add to set of student number
+        list_no_etu.add(no_etu)
         # check if no_etu corresponds to a note in the csv
         if no_etu in notes.keys():
             # student's note
@@ -63,6 +70,7 @@ def fill(notes):
             note_id.send_keys(note)
             # execture onblur to update checkboxes and other verification checks
             #browser.execute_script("document.activeElement.onblur()")
+    return list_no_etu
 
 # main function to upload csv
 def upload(filename, idd, mark):
@@ -76,10 +84,16 @@ def upload(filename, idd, mark):
     
     # try to fill the marks
     try:
-        fill(notes)
+        list_no_etu = fill(notes)
         print("Please check that the marks are correctly filled and click on the button Envoi to save the marks on IP.")
     except:
         print("Error: unable to fill the page with the marks. Please try again on the correct webpage or type quit() to exit.")
+
+    # return the differences between csv file and IP
+    notinCSV = list_no_etu - notes.keys()
+    notinIP = notes.keys() - list_no_etu
+    print("Students in IP but not in CSV file: %s" % notinCSV)
+    print("Students in CSV but not on IP: %s" % notinIP)
 
 # exit firefox on quit
 def quit():
