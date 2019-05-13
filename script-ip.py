@@ -1,42 +1,10 @@
 #!/usr/bin/env python3
 
-###################################################################################################
-## Script python3 pour rentrer les notes sur IP (https://etu.math.upmc.fr/math/) automatiquement ##
-## à partir d'un fichier CSV, par Julien Guillod                                                 ##
-## v1 11 janvier 2018                                                                            ##
-## v2 4 juin 2018                                                                                ##
-## v3 19 novembre 2018                                                                           ##
-###################################################################################################
-
-### Dépendances : ###
-#   * firefox
-#   * csv (installed by default on ubuntu otherwise execute "pip3 install csv")
-#   * code (installed by default on ubuntu otherwise execute "pip3 install code")
-#   * selenium (install the package python3-selenium on ubuntu or execute "pip3 install selenium")
-#   * geckodriver (download the executable from https://github.com/mozilla/geckodriver/releases and add its location to $PATH)
-
-# Testé sous ubuntu 16.04 avec firefox v60.0.1, selenium v3.8.1 et geckodriver v0.19.1
-
-### Format de fichier CSV : ###
-# doit contenir une colonne avec le numéro de l'étudiant (avec label id par exemple) et une autre avec la note (avec lable note par exemple),
-# d'autres colonnes sont permises. Exemple de fichier notes.csv :
-#   id,note,other
-#   3409999,5,ert
-#   3419999,5.6,rtt
-#   3709999,5.8,rtz
-#   3739999,Abs,rtz
-#   3439999,AbsJ,ert
-
-### Utilisation : ###
-#   1. Lancer le script avec ./script-IP
-#   2. Une fois que firefox a terminé de charger, procéder au login.
-#   3. Naviguer jusqu'à la page du cours, cliquer sur "saisir les notes" et enfin sur la colonne correspondante aux notes à rentrer.
-#   4. Taper la commande "upload('notes.csv', 'id', 'note')" pour remplir automatiquement les notes sur la page firefox depuis les colonnes 'id' et 'note' du fichier 'notes.csv'.
-#   5. Contrôler que les notes sont rentrées correctement sur firefox et cliquer sur le bouton "Envoyer".
-#   6. C'est terminé, taper quit() sur la ligne de commande pour quitter ou recommencer au point 3. pour remplir les notes d'un autre examen.
-
-### Spécifications ###
-# Le script remplit les notes de tout les étudiants affichés sur la page IP qui sont également présents dans le fichier CSV (i.e. l'intersection des deux). Les notes présentes dans le fichier csv et sur la page IP sont écrasées, les autres notes sont conservées. Les étudiants présents dans le fichier csv mais pas sur IP sont signalés.
+###################################################################################
+## Script python3 pour rentrer les notes sur IP (https://etu.math.upmc.fr/math/) ##
+## automatiquement à partir d'un fichier CSV, par Julien Guillod                 ##
+## Instructions d'installation et d'utilisation : https://guillod.org/script-ip/ ##
+###################################################################################
 
 import csv, code
 from selenium import webdriver
@@ -56,10 +24,15 @@ def fill(notes):
     # list of student number on IP
     list_no_etu = set()
     for i in range(nb_notes):
-        # student's number corresponding to ith note
-        no_etu = browser.find_element_by_id('dossier'+str(i)).get_attribute("value")
-        # add to set of student number
-        list_no_etu.add(no_etu)
+        # try if student's note can be filled on IP
+        try:
+            # student's number corresponding to ith note
+            no_etu = browser.find_element_by_id('dossier'+str(i)).get_attribute("value")
+            # add to set of student number
+            list_no_etu.add(no_etu)
+        # otherwise go to next line on IP
+        except:
+            continue
         # check if no_etu corresponds to a note in the csv
         if no_etu in notes.keys():
             # student's note
