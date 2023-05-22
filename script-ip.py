@@ -20,14 +20,14 @@ def load(filename, idd, mark):
 # function to fill the marks
 def fill(notes):
     #iterate over the number of notes in html
-    nb_notes = int(browser.find_element_by_id("nb_notes").get_attribute("value"))
+    nb_notes = int(browser.find_element("id", "nb_notes").get_attribute("value"))
     # list of student number on IP
     list_no_etu = set()
     for i in range(nb_notes):
         # try if student's note can be filled on IP
         try:
             # student's number corresponding to ith note
-            no_etu = browser.find_element_by_id('dossier'+str(i)).get_attribute("value")
+            no_etu = browser.find_element("id", 'dossier'+str(i)).get_attribute("value")
             # add to set of student number
             list_no_etu.add(no_etu)
         # otherwise go to next line on IP
@@ -38,10 +38,10 @@ def fill(notes):
             # student's note
             note = notes[no_etu]
             # write note to html
-            note_id = browser.find_element_by_id('note'+str(i))
+            note_id = browser.find_element("id", 'note'+str(i))
             note_id.clear()
             note_id.send_keys(note)
-            # execture onblur to update checkboxes and other verification checks
+            # execute onblur to update checkboxes and other verification checks
             #browser.execute_script("document.activeElement.onblur()")
     return list_no_etu
 

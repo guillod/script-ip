@@ -15,6 +15,7 @@ Testé sous:
 * ubuntu 16.04 avec Firefox 60.0.1, Selenium 3.8.0 et Geckodriver 0.19.1
 * ubuntu 18.04 avec Firefox 67.0.1, Selenium 3.8.0 et Geckodriver 0.23.0
 * ubuntu 20.04 avec Firefox 110.0, Selenium 4.0.0 et Geckodriver 0.32.2
+* ubuntu 22.04 avec Firefox 113.0, Selenium 4.9.1 et Geckodriver 0.33.0
 
 ## Format de fichier CSV
 Le fichier CSV doit contenir une colonne avec le numéro de l'étudiant (avec label id par exemple) et une autre avec la note (avec label note par exemple), d'autres colonnes sont permises. Exemple de fichier 'notes.csv' :
@@ -43,6 +44,7 @@ Le script remplit les notes de tout les étudiants affichés sur la page IP qui 
 * v2 (4 juin 2018) : utilisation de code.interact à la place de argparse
 * v3 (19 novembre 2018) : affichage de la liste des étudiants sur IP pas présent dans le CSV et inversément
 * v4 (13 mai 2019) : correction d'un bug lorsque les notes ne peuvent pas être remplies sur IP
+* v5 (22 mai 2023) : remplacement de find_element_by_id (dépreciée) par find_element
 
 ## Licence
 Apache License Version 2.0
